@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>免費部署AI龍蝦交易系統 - 香港地區專屬</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17997112641"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-17997112641');
+    </script>
+    
+    <style>
+        /* 加载遮罩层 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-icon {
+            font-size: 60px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loading-text {
+            color: #fff;
+            font-size: 22px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .loading-subtext {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
+            line-height: 1.6;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+        }
+
+        .page-wrapper {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .lang-switch span {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .lang-switch span:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .lang-switch span.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .contact-btn {
+            background: linear-gradient(135deg, #e94560 0%, #c73659 100%);
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Hero 区域 */
+        .hero {
+            padding: 80px 30px;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(233, 69, 96, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #fff 0%, #e94560 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-btn-primary {
+            background: linear-gradient(135deg, #e94560 0%, #c73659 100%);
+            color: #fff;
+            border: none;
+        }
+
+        .hero-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+        }
+
+        .hero-btn-secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 特色区域 */
+        .features {
+            padding: 80px 30px;
+            background: #fff;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 32px;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 系统介绍 */
+        .system-intro {
+            padding: 80px 30px;
+            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+            color: #fff;
+        }
+
+        .system-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .system-container h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .system-container .highlight {
+            font-size: 20px;
+            color: #e94560;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .system-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .system-feature {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .system-feature .icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .system-feature p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 联系方式区域 */
+        .contact-section {
+            padding: 80px 30px;
+            background: #fff;
+        }
+
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        .contact-card h3 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+
+        .contact-card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25D366;
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+        }
+
+        .gmail-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #ea4335 0%, #c5221f 100%);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .gmail-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(234, 67, 53, 0.4);
+        }
+
+        /* 表单区域 */
+        .form-section {
+            padding: 80px 30px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #e94560 0%, #c73659 100%);
+            color: #fff;
+            padding: 35px;
+            text-align: center;
+        }
+
+        .form-header h3 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form-body {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #1a1a2e;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .form-group label .required {
+            color: #e94560;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #e94560;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #e94560 0%, #c73659 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #fed7d7;
+            font-size: 14px;
+        }
+
+        /* 免责声明 */
+        .disclaimer {
+            padding: 60px 30px;
+            background: #f8f9fa;
+        }
+
+        .disclaimer-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            border-left: 4px solid #e94560;
+        }
+
+        .disclaimer h3 {
+            font-size: 20px;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .disclaimer-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .disclaimer-content p {
+            margin-bottom: 15px;
+        }
+
+        .disclaimer-content ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .disclaimer-content li {
+            margin-bottom: 10px;
+        }
+
+        /* 底部 */
+        .footer {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 60px 30px 30px;
+        }
+
+        .footer-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .footer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .footer-item .icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .footer-item .text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .footer-item .text strong {
+            color: #fff;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .footer-item a {
+            color: #e94560;
+            text-decoration: none;
+        }
+
+        .footer-item a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-address {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-address p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .footer-address strong {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-bottom p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .footer-bottom a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            color: #e94560;
+        }
+
+        /* WhatsApp 浮动按钮 */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #25D366;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 32px;
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            text-decoration: none;
+            animation: pulse-btn 2s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { box-shadow: 0 6px 25px rgba(37, 211, 102, 0.5); }
+            50% { box-shadow: 0 8px 35px rgba(37, 211, 102, 0.8); }
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 40px rgba(37, 211, 102, 0.7);
+        }
+
+        .whatsapp-float svg {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+        }
+
+        .whatsapp-float span {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero .subtitle {
+                font-size: 14px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .section-title h2 {
+                font-size: 24px;
+            }
+
+            .form-body {
+                padding: 25px;
+            }
+
+            .whatsapp-float {
+                padding: 14px 24px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .whatsapp-float span {
+                font-size: 16px;
+            }
+
+            .whatsapp-float svg {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载遮罩层 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-icon">🦞</div>
+        <div class="loading-text">AI 龍蝦交易系統</div>
+        <div class="loading-subtext">正在為您準備最佳體驗...</div>
+    </div>
+
+    <div class="page-wrapper">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="lang-switch">
+                <span>中文（简体）</span>
+                <span>|</span>
+                <span class="active">中文（繁體）</span>
+                <span>|</span>
+                <span>English</span>
+            </div>
+            <button class="contact-btn" onclick="document.getElementById('formSection').scrollIntoView({behavior: 'smooth'})">立即申請</button>
+        </nav>
+
+        <!-- Hero 区域 -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>你還在盯盤交易，<br>機構已經讓AI幫他們賺錢</h1>
+                <p class="subtitle">While you're trading manually, institutions are already using AI to do it for them</p>
+                <div class="hero-buttons">
+                    <button class="hero-btn hero-btn-primary" onclick="document.getElementById('formSection').scrollIntoView({behavior: 'smooth'})">
+                        🦞 免費部署你的AI交易系統
+                    </button>
+                    <span class="hero-btn hero-btn-secondary">
+                        ⚡ 限量開放 僅限本期申請
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 特色区域 -->
+        <section class="features">
+            <div class="features-container">
+                <div class="section-title">
+                    <h2>現在的市場，為什麼你越來越難賺錢？</h2>
+                    <p>不是你不會分析，而是市場已經變了。從「趨勢行情」→「預期+情緒+算法博弈」，你面對的，不再是散戶。</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>AI自動監控市場</h3>
+                        <p>24小時不間斷監控，捕捉每一個交易機會</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>AI識別主力行為</h3>
+                        <p>智能識別機構動向，跟隨主力資金流向</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>AI提示機會與風險</h3>
+                        <p>實時預警系統，把握機會規避風險</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💡</div>
+                        <h3>AI輔助交易決策</h3>
+                        <p>數據驅動決策，減少人為情緒干擾</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 系统介绍 -->
+        <section class="system-intro">
+            <div class="system-container">
+                <h2>我們正在建立：AI龍蝦量化作戰體系</h2>
+                <p class="highlight">「龍蝦 + AI量化 + 自動決策」= 未來賺錢的入口</p>
+                <p style="font-size: 16px; color: rgba(255,255,255,0.8); margin-bottom: 20px;">你不是來用工具的，而是成為：第一批使用AI交易的人，第一批進入AI量化體系的人</p>
+                <p style="font-size: 16px; color: rgba(255,255,255,0.8);">現在開放：</p>
+                <div class="system-features">
+                    <div class="system-feature">
+                        <div class="icon">✅</div>
+                        <p>免費部署基礎系統</p>
+                    </div>
+                    <div class="system-feature">
+                        <div class="icon">✅</div>
+                        <p>免費提供入門操作流程</p>
+                    </div>
+                    <div class="system-feature">
+                        <div class="icon">✅</div>
+                        <p>後續進階能力通過課程免費解鎖</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系方式 -->
+        <section class="contact-section">
+            <div class="contact-container">
+                <div class="contact-card">
+                    <h3>📱 一鍵獲取部署圖（WhatsApp）</h3>
+                    <p>一鍵直達 | 快速領取 | 專人指導</p>
+                    <a href="https://wa.link/gv9982" target="_blank" class="whatsapp-btn" id="whatsappBtn1" onclick="trackWhatsAppClick()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.438 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.63 1.438h.004c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        通過 WhatsApp 獲取
+                    </a>
+                </div>
+                <div class="contact-card">
+                    <h3>📧 Gmail獲取AI分析結果</h3>
+                    <p>點擊通過Gmail獲取後，會跳轉到郵件頁面並自動填充內容，您只需點擊 Send 即可發送。</p>
+                    <button class="gmail-btn" onclick="sendGmail()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24">
+                            <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+                        </svg>
+                        通過Gmail獲取
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 表单区域 -->
+        <section class="form-section" id="formSection">
+            <div class="form-container">
+                <div class="form-header">
+                    <h3>立即申請部署龍蝦系統</h3>
+                    <p>限量開放 僅限本期申請</p>
+                </div>
+                <div class="form-body">
+                    <div class="error-message" id="errorMessage"></div>
+                    <form id="reservationForm">
+                        <div class="form-group">
+                            <label>姓名 <span class="required">*</span></label>
+                            <input type="text" id="name" placeholder="請輸入您的姓名" required>
+                        </div>
+                        <div class="form-group">
+                            <label>手機號 <span class="required">*</span></label>
+                            <input type="tel" id="phone" placeholder="請輸入您的手機號" required>
+                        </div>
+                        <div class="form-group">
+                            <label>電子郵箱 <span class="required">*</span></label>
+                            <input type="email" id="email" placeholder="請輸入您的郵箱" required>
+                        </div>
+                        <button type="submit" class="submit-btn" id="submitBtn">立即申請</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 免责声明 -->
+        <section class="disclaimer">
+            <div class="disclaimer-container">
+                <h3>⚠️ 重要免責聲明</h3>
+                <div class="disclaimer-content">
+                    <p><strong>風險提示：</strong>金融市場交易存在高風險，過往表現不代表未來收益。投資者應根據自身財務狀況和風險承受能力謹慎決策。</p>
+                    <p><strong>系統說明：</strong>AI龍蝦交易系統僅為輔助工具，不構成任何投資建議或保證收益。所有交易決策由投資者自行負責。</p>
+                    <ul>
+                        <li>本系統不推薦任何具體股票或金融產品</li>
+                        <li>本系統不提供投資建議或理財服務</li>
+                        <li>本系統不代客理財或代為操作賬戶</li>
+                        <li>投資有風險，入市需謹慎</li>
+                    </ul>
+                    <p><strong>隱私保護：</strong>您提交的個人信息僅用於系統部署和服務聯繫，不會出售或分享給第三方。您可以隨時要求我們刪除您的個人信息。</p>
+                    <p>詳細信息請參閱我們的<a href="https://victoriazhang696-crypto.github.io/privacy-policy-hk/" target="_blank" style="color: #e94560;">隱私政策</a>。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部 -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-info">
+                    <div class="footer-item">
+                        <span class="icon">🌐</span>
+                        <div class="text">
+                            <strong>公司網站</strong>
+                            <a href="https://my.homilychart.com/" target="_blank">https://my.homilychart.com/</a>
+                        </div>
+                    </div>
+                    <div class="footer-item">
+                        <span class="icon">📱</span>
+                        <div class="text">
+                            <strong>WhatsApp</strong>
+                            +60 172406258
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-address">
+                    <p><strong>吉隆坡：</strong>Block 2A-7-1, Plaza Sentral, Jalan Stensen Sentral 5, Kuala Lumpur Sentral, 50470 Kuala Lumpur.</p>
+                    <p><strong>檳城：</strong>51-15-C2, Menara BHL, Jalan Sultan Ahmad Shah, 10050 Georgetown, Penang.</p>
+                    <p><strong>新山：</strong>137-01 & 137-02, Jalan Mutiara Emas 10/19, Taman Mount Austin, 81100 Johor Bahru, Johor.</p>
+                </div>
+                <div class="footer-bottom">
+                    <p>© 2026 AI龍蝦交易系統 | Homily Chart Malaysia</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- WhatsApp 浮动按钮 -->
+    <a href="https://wa.link/gv9982" 
+       target="_blank" 
+       class="whatsapp-float" 
+       id="whatsappFloatBtn"
+       onclick="trackWhatsAppClick()"> 
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.438 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.63 1.438h.004c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+       </svg>
+       <span>通過WhatsApp獲取</span>
+    </a>
+
+    <script>
+        // 页面加载完成后隐藏加载动画
+        window.addEventListener('load', function() {
+            var overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+            }
+        });
+
+        // 备用：5秒后强制隐藏
+        setTimeout(function() {
+            var overlay = document.getElementById('loadingOverlay');
+            if (overlay && !overlay.classList.contains('hidden')) {
+                overlay.classList.add('hidden');
+            }
+        }, 5000);
+
+        const form = document.getElementById('reservationForm');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const emailInput = document.getElementById('email');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // 表单提交
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const email = emailInput.value.trim();
+
+            // 验证姓名
+            if (!name) {
+                showError('請輸入您的姓名');
+                return;
+            }
+
+            // 验证手机号
+            if (!phone) {
+                showError('請輸入您的手機號');
+                return;
+            }
+
+            // 验证邮箱
+            if (!email) {
+                showError('請輸入您的郵箱地址');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showError('請輸入有效的郵箱地址');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '提交中...';
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        phone: phone,
+                        email: email,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = '/thank-you.html';
+                } else {
+                    showError(result.message || '提交失敗，請稍後重試');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '立即申請';
+                }
+            } catch (error) {
+                showError('網絡錯誤，請稍後重試');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '立即申請';
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // WhatsApp 点击追踪
+        function trackWhatsAppClick() {
+            fetch('/api/whatsapp-click', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ timestamp: new Date().toISOString() })
+            }).catch(err => console.log('WhatsApp click tracking failed'));
+        }
+
+        // Gmail 发送
+        function sendGmail() {
+            const subject = encodeURIComponent('AI龍蝦交易系統 - 獲取部署圖');
+            const body = encodeURIComponent('您好，我想獲取AI龍蝦交易系統的部署圖，請提供相關信息。');
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=support@homilychartmalaysia.com&su=${subject}&body=${body}`, '_blank');
+        }
+    </script>
+</body>
+</html>
