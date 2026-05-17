@@ -8,9 +8,9 @@ const { Resend } = require('resend');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Supabase 配置 - 香港版数据库（需要创建新的 Supabase 项目）
-const SUPABASE_URL = process.env.SUPABASE_URL || 'YOUR_HK_SUPABASE_URL';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'YOUR_HK_SUPABASE_ANON_KEY';
+// Supabase 配置 - 香港版（使用教育版数据库）
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://uwjwlgqexmzyfblwmbuo.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3andsZ3FleG16eWZibHdtYnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzMwNDksImV4cCI6MjA5MzY0OTA0OX0.j0za_7PB4uvS7WQPUoCypaFDYnfu74dvG053NOzMbYc';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
